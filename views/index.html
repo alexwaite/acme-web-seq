@@ -22,10 +22,20 @@
         </li>
         <% }) %>
       </ul>
+      <form method="post" action="/pages/<%= page.id %>/contents">
+        <button>Add Content</button>
+      </form>
+
       <div>
         <% page.contents.forEach(function(content) { %>
         <h4><%=content.name%></h4>
         <p><%=content.body%></p>
+        <form
+          method="post"
+          action="/pages/<%= page.id %>/contents/<%=content.id%>?_method=delete"
+        >
+          <button class="btn btn-danger">Delete</button>
+        </form>
         <% }) %>
       </div>
     </div>
