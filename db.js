@@ -1,12 +1,12 @@
 const Sequelize = require('sequelize');
 
-const conn = new Sequelize('postgres://localhost:5432/acme-web-seq-practice');
+const db = new Sequelize('postgres://localhost:5432/acme-web-seq-practice');
 
-const Page = conn.define('page', {
+const Page = db.define('page', {
   name: Sequelize.STRING,
   is_home_page: Sequelize.BOOLEAN,
 });
-const Content = conn.define('content', {
+const Content = db.define('content', {
   name: Sequelize.STRING,
   body: Sequelize.TEXT,
 });
@@ -14,10 +14,9 @@ const Content = conn.define('content', {
 Content.belongsTo(Page);
 Page.hasMany(Content);
 
-conn
-  .sync({ force: true })
-  .then(() => {
-    const createPages = Promise.all([
+const syncAndSeed = () => {
+  db.sync({ force: true }).then(async () => {
+    const [home, employees, contact] = await Promise.all([
       Page.create({
         name: 'Home',
         is_home_page: true,
@@ -27,14 +26,45 @@ conn
         is_home_page: false,
       }),
       Page.create({
-        name: 'Test',
+        name: 'Contact',
         is_home_page: false,
       }),
     ]);
-  })
-  .then(() => {
-    return Promise.all([createPages]);
-  })
-  .then(() => conn.close());
+    await Promise.all([
+      Content.create({
+        name: 'Home',
+        body: 'Welcome Home',
+        pageId: home.id,
+      }),
+      Content.create({
+        name: 'Moe',
+        body: 'Moe is the CEO',
+        pageId: employees.id,
+      }),
+      Content.create({
+        name: 'Larry',
+        body: 'Larry is the CTO',
+        pageId: employees.id,
+      }),
+      Content.create({
+        name: 'Curly',
+        body: 'Curly is the COO',
+        pageId: employees.id,
+      }),
+      Content.create({
+        name: 'Phone',
+        body: 'Call us at 555-555-5555',
+        pageId: contact.id,
+      }),
+      Content.create({
+        name: 'Fax',
+        body: 'Fax us at 555-555-5556',
+        pageId: contact.id,
+      }),
+    ]);
+  });
+};
 
-module.exports = { conn, Page, Content };
+syncAndSeed();
+
+module.exports = { db, syncAndSeed, Page, Content };

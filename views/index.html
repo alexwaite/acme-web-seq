@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <title>
+      Acme Web: <%= page.name%>
+    </title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <ul class="nav nav-tabs">
+        <% pages.forEach(function(_page) { %>
+        <li class="nav-item">
+          <a
+            href="/pages/<%= _page.id%>"
+            class="nav-link
+            <%= page.id === _page.id ? 'active' : ''%>         "
+            ><%= _page.name %>
+          </a>
+        </li>
+        <% }) %>
+      </ul>
+      <div>
+        <% page.contents.forEach(function(content) { %>
+        <h4><%=content.name%></h4>
+        <p><%=content.body%></p>
+        <% }) %>
+      </div>
+    </div>
+  </body>
+</html>
